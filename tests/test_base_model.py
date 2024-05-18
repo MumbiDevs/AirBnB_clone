@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import unittest
+from unittest.mock import patch
 from models.base_model import BaseModel
 from datetime import datetime
 import time
@@ -39,6 +40,14 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(obj_dict["id"], my_model.id)
         self.assertEqual(obj_dict["created_at"], my_model.created_at.isoformat())
         self.assertEqual(obj_dict["updated_at"], my_model.updated_at.isoformat())
+    def get_user_input():
+        """testing a user input"""
+        return input("Enter something: ")
+        class TestUserInput(unittest.TestCase):
+        @patch('builtins.input', return_value='mocked input')
+    def test_get_user_input(self, mock_input):
+        result = get_user_input()
+        self.assertEqual(result, 'mocked input')
 
 if __name__ == "__main__":
     unittest.main()
