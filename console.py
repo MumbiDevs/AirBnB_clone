@@ -3,9 +3,10 @@
 Entry point for the command interpreter.
 """
 import cmd
+import shlex
 from models import storage
 from models.base_model import BaseModel
-import shlex
+
 
 class HBNBCommand(cmd.Cmd):
     """Command interpreter class."""
