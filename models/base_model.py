@@ -1,3 +1,8 @@
+#!/usr/bin/python3
+"""Module for Base class
+Contains the Base class for the AirBnB clone console.
+"""
+
 import uuid
 from datetime import datetime
 from models import storage
@@ -8,6 +13,7 @@ class BaseModel:
     
     def __init__(self, *args, **kwargs):
         """Initialize a new instance of BaseModel."""
+        
          if kwargs:
             for key, value in kwargs.items():
                 if key != '__class__':
