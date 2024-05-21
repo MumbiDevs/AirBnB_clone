@@ -118,7 +118,6 @@ class HBNBCommand(cmd.Cmd):
 
      def do_all(self, arg):
         """Prints all string representation of all instances"""
-        class_name, method = arg.split('.', 1)
         classes = {
             "BaseModel": BaseModel,
             "Place": Place,
@@ -127,14 +126,17 @@ class HBNBCommand(cmd.Cmd):
             "Amenity": Amenity,
             "Review": Review
         }
-        if class_name in classes and hasattr(classes[class_name], method):
-            instances = getattr(classes[class_name], method)()
-            if isinstance(instances, list):
-                print(instances)
-            else:
-                print([str(obj) for obj in instances.values()])
+
+        if arg and arg not in classes:
+            print("** class doesn't exist **")
+            return
+
+        if arg:
+            objects = storage.all(arg)
         else:
-            print("*** Unknown syntax: {}".format(arg))
+            objects = storage.all()
+
+        print([str(obj) for obj in objects.values()])
         
 
     def do_update(self, arg):
