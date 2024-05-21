@@ -139,21 +139,29 @@ class HBNBCommand(cmd.Cmd):
         setattr(objects[key], args[2], args[3])
         objects[key].save()
 
-    def default(self, arg):
-        """Handle default behavior for unrecognized commands"""
-        args = arg.split('.')
-        if len(args) > 1:
-            if args[1] == "all()":
-                self.do_all(args[0])
-            elif args[1] == "count()":
-                objects = storage.all(args[0])
-                count = sum(1 for obj in objects.values() if isinstance(obj, self.classes[args[0]]))
-                print(count)
-            else:
-                print("*** Unknown syntax: {}".format(arg))
-        else:
-            print("*** Unknown syntax: {}".format(arg))
+    def do_count(self, arg):
+        """Counts the number of instances of a class"""
+        if arg not in self.classes:
+            print("** class doesn't exist **")
+            return
 
+        objects = storage.all(arg)
+        count = sum(1 for obj in objects.values() if isinstance(obj, self.classes[arg]))
+        print(count)
+
+    def precmd(self, line):
+        """Hook method executed just before the command line is interpreted"""
+        if '.' in line and '(' in line and ')' in line:
+            try:
+                cls_name, method_call = line.split('.')
+                method_name = method_call.split('(')[0]
+                if method_name == "all":
+                    return "do_all " + cls_name
+                elif method_name == "count":
+                    return "do_count " + cls_name
+            except Exception as e:
+                pass
+        return line
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
