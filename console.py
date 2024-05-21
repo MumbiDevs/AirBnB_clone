@@ -14,13 +14,22 @@ class HBNBCommand(cmd.Cmd):
     """Command interpreter class"""
 
     prompt = "(hbnb) "
+    
+    classes = {
+        "BaseModel": BaseModel,
+        "Place": Place,
+        "State": State,
+        "City": City,
+        "Amenity": Amenity,
+        "Review": Review
+    }
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
         return True
 
     def do_EOF(self, arg):
-        """Handles EOF"""
+        """Handles EOF to exit the program"""
         print()
         return True
 
@@ -34,20 +43,11 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        classes = {
-            "BaseModel": BaseModel,
-            "Place": Place,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Review": Review
-        }
-
-        if arg not in classes:
+        if arg not in self.classes:
             print("** class doesn't exist **")
             return
 
-        new_instance = classes[arg]()
+        new_instance = self.classes[arg]()
         new_instance.save()
         print(new_instance.id)
 
@@ -58,16 +58,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        classes = {
-            "BaseModel": BaseModel,
-            "Place": Place,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Review": Review
-        }
-
-        if args[0] not in classes:
+        if args[0] not in self.classes:
             print("** class doesn't exist **")
             return
 
@@ -90,16 +81,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        classes = {
-            "BaseModel": BaseModel,
-            "Place": Place,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Review": Review
-        }
-
-        if args[0] not in classes:
+        if args[0] not in self.classes:
             print("** class doesn't exist **")
             return
 
@@ -116,28 +98,14 @@ class HBNBCommand(cmd.Cmd):
         del objects[key]
         storage.save()
 
-     def do_all(self, arg):
-        """Prints all string representation of all instances"""
-        classes = {
-            "BaseModel": BaseModel,
-            "Place": Place,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Review": Review
-        }
-
-        if arg and arg not in classes:
+    def do_all(self, arg):
+        """Prints all string representation of all instances of a class"""
+        if arg and arg not in self.classes:
             print("** class doesn't exist **")
             return
 
-        if arg:
-            objects = storage.all(arg)
-        else:
-            objects = storage.all()
-
+        objects = storage.all(arg) if arg else storage.all()
         print([str(obj) for obj in objects.values()])
-        
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
@@ -146,16 +114,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        classes = {
-            "BaseModel": BaseModel,
-            "Place": Place,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Review": Review
-        }
-
-        if args[0] not in classes:
+        if args[0] not in self.classes:
             print("** class doesn't exist **")
             return
 
@@ -178,17 +137,17 @@ class HBNBCommand(cmd.Cmd):
             return
 
         setattr(objects[key], args[2], args[3])
-        storage.save()
-        
+        objects[key].save()
+
     def default(self, arg):
-        """Handle default behavior"""
+        """Handle default behavior for unrecognized commands"""
         args = arg.split('.')
         if len(args) > 1:
             if args[1] == "all()":
                 self.do_all(args[0])
             elif args[1] == "count()":
                 objects = storage.all(args[0])
-                count = sum(1 for obj in objects.values())
+                count = sum(1 for obj in objects.values() if isinstance(obj, self.classes[args[0]]))
                 print(count)
             else:
                 print("*** Unknown syntax: {}".format(arg))
