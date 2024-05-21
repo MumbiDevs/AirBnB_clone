@@ -116,8 +116,9 @@ class HBNBCommand(cmd.Cmd):
         del objects[key]
         storage.save()
 
-    def do_all(self, arg):
+     def do_all(self, arg):
         """Prints all string representation of all instances"""
+        class_name, method = arg.split('.', 1)
         classes = {
             "BaseModel": BaseModel,
             "Place": Place,
@@ -126,7 +127,6 @@ class HBNBCommand(cmd.Cmd):
             "Amenity": Amenity,
             "Review": Review
         }
-
         if class_name in classes and hasattr(classes[class_name], method):
             instances = getattr(classes[class_name], method)()
             if isinstance(instances, list):
@@ -135,6 +135,7 @@ class HBNBCommand(cmd.Cmd):
                 print([str(obj) for obj in instances.values()])
         else:
             print("*** Unknown syntax: {}".format(arg))
+        
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
