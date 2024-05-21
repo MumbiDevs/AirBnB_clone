@@ -11,22 +11,30 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def all(self):
-        """Returns __objects dictionary."""
-        # TODO: should this be a copy()?
-        return FileStorage.__objects
+    def all(self, cls=None):
+        """Returns a dictionary of all objects"""
+        if cls is None:
+            return self.__objects
+        else:
+            filtered_objects = {}
+            for key, obj in self.__objects.items():
+                if type(obj).__name__ == cls.__name__:
+                    filtered_objects[key] = obj
+            return filtered_objects
 
     def new(self, obj):
-        """Sets new obj in __objects dictionary."""
-        # TODO: should these be more precise specifiers?
+        """Adds new object to the __objects dictionary"""
         key = "{}.{}".format(type(obj).__name__, obj.id)
-        FileStorage.__objects[key] = obj
+        self.__objects[key] = obj
 
     def save(self):
-        """Serialzes __objects to JSON file."""
-        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
-            d = {k: v.to_dict() for k, v in FileStorage.__objects.items()}
-            json.dump(d, f)
+        """Serializes __objects to a JSON file"""
+        serialized_objects = {}
+        for key, obj in self.__objects.items():
+            serialized_objects[key] = obj.to_dict()
+
+        with open(self.__file_path, 'w') as file:
+            json.dump(serialized_objects, file)
 
     def classes(self):
         """Returns a dictionary of valid classes and their references."""
@@ -48,15 +56,16 @@ class FileStorage:
         return classes
 
     def reload(self):
-        """Deserializes JSON file into __objects."""
-        if not os.path.isfile(FileStorage.__file_path):
-            return
-        with open(FileStorage.__file_path, "r", encoding="utf-8") as f:
-            obj_dict = json.load(f)
-            obj_dict = {k: self.classes()[v["__class__"]](**v)
-                        for k, v in obj_dict.items()}
-            # TODO: should this overwrite or insert?
-            FileStorage.__objects = obj_dict
+        """Deserializes the JSON file to __objects"""
+        try:
+            with open(self.__file_path, 'r') as file:
+                deserialized_objects = json.load(file)
+                for key, value in deserialized_objects.items():
+                    class_name, obj_id = key.split('.')
+                    class_ = eval(class_name)
+                    self.__objects[key] = class_(**value)
+        except FileNotFoundError:
+            pass
 
     def attributes(self):
         """Returns the valid attributes and their types for classname."""
