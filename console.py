@@ -3,6 +3,11 @@
 import cmd
 from models.base_model import BaseModel
 from models import storage
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
@@ -24,32 +29,59 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, arg):
-        """Creates a new instance of BaseModel"""
+        """Creates a new instance of a specified class"""
         if not arg:
             print("** class name missing **")
-        elif arg not in ["BaseModel"]:  # Add more class names as needed
+            return
+
+        classes = {
+            "BaseModel": BaseModel,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review
+        }
+
+        if arg not in classes:
             print("** class doesn't exist **")
-        else:
-            new_instance = BaseModel()
-            new_instance.save()
-            print(new_instance.id)
+            return
+
+        new_instance = classes[arg]()
+        new_instance.save()
+        print(new_instance.id)
 
     def do_show(self, arg):
         """Prints the string representation of an instance"""
         args = arg.split()
         if not args:
             print("** class name missing **")
-        elif args[0] not in ["BaseModel"]:  # Add more class names as needed
+            return
+
+        classes = {
+            "BaseModel": BaseModel,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review
+        }
+
+        if args[0] not in classes:
             print("** class doesn't exist **")
-        elif len(args) < 2:
+            return
+
+        if len(args) < 2:
             print("** instance id missing **")
-        else:
-            key = "{}.{}".format(args[0], args[1])
-            objects = storage.all()
-            if key not in objects:
-                print("** no instance found **")
-            else:
-                print(objects[key])
+            return
+
+        key = "{}.{}".format(args[0], args[1])
+        objects = storage.all()
+        if key not in objects:
+            print("** no instance found **")
+            return
+
+        print(objects[key])
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id"""
