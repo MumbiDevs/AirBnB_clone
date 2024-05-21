@@ -2,6 +2,7 @@
 """Module for FileStorage class."""
 import datetime
 import json
+import os
 from models.place import Place
 from models.state import State
 from models.city import City
