@@ -106,19 +106,21 @@ class HBNBCommand(cmd.Cmd):
         setattr(objects[key], args[2], args[3])
         storage.save()
 
-    def do_count(self, line):
-        """Counts the instances of a class.
-        """
-        words = line.split(' ')
-        if not words[0]:
-            print("** class name missing **")
-        elif words[0] not in storage.classes():
-            print("** class doesn't exist **")
+    def default(self, arg):
+        """Handle default behavior"""
+        args = arg.split('.')
+        if len(args) > 1:
+            if args[1] == "all()":
+                self.do_all(args[0])
+            elif args[1] == "count()":
+                objects = storage.all(args[0])
+                count = sum(1 for obj in objects.values())
+                print(count)
+            else:
+                print("*** Unknown syntax: {}".format(arg))
         else:
-            matches = [
-                k for k in storage.all() if k.startswith(
-                    words[0] + '.')]
-            print(len(matches))
+            print("*** Unknown syntax: {}".format(arg))
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
