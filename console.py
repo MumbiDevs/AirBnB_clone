@@ -137,6 +137,15 @@ class HBNBCommand(cmd.Cmd):
             objects = storage.all()
 
         print([str(obj) for obj in objects.values()])
+        
+        if class_name in classes and hasattr(classes[class_name], method):
+            instances = getattr(classes[class_name], method)()
+            if isinstance(instances, list):
+                print(instances)
+            else:
+                print([str(obj) for obj in instances.values()])
+        else:
+            print("*** Unknown syntax: {}".format(arg))
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
