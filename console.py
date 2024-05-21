@@ -113,14 +113,17 @@ class HBNBCommand(cmd.Cmd):
             if args[1] == "all()":
                 self.do_all(args[0])
             elif args[1] == "count()":
-                objects = storage.all(args[0])
-                count = sum(1 for obj in objects.values())
-                print(count)
+                 try:
+                    class_name = args[0]
+                    objects = storage.all(class_name)
+                    count = sum(1 for obj in objects.values() if obj.__class__.__name__ == class_name)
+                    print(count)
+                except:
+                    print("** class doesn't exist **")
             else:
                 print("*** Unknown syntax: {}".format(arg))
         else:
             print("*** Unknown syntax: {}".format(arg))
-
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
