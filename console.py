@@ -88,28 +88,54 @@ class HBNBCommand(cmd.Cmd):
         args = arg.split()
         if not args:
             print("** class name missing **")
-        elif args[0] not in ["BaseModel"]:  # Add more class names as needed
+            return
+
+        classes = {
+            "BaseModel": BaseModel,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review
+        }
+
+        if args[0] not in classes:
             print("** class doesn't exist **")
-        elif len(args) < 2:
+            return
+
+        if len(args) < 2:
             print("** instance id missing **")
-        else:
-            key = "{}.{}".format(args[0], args[1])
-            objects = storage.all()
-            if key not in objects:
-                print("** no instance found **")
-            else:
-                del objects[key]
-                storage.save()
+            return
+
+        key = "{}.{}".format(args[0], args[1])
+        objects = storage.all()
+        if key not in objects:
+            print("** no instance found **")
+            return
+
+        del objects[key]
+        storage.save()
 
     def do_all(self, arg):
         """Prints all string representation of all instances"""
+        classes = {
+            "BaseModel": BaseModel,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review
+        }
+
+        if arg and arg not in classes:
+            print("** class doesn't exist **")
+            return
+
         if arg:
-            if arg not in ["BaseModel"]:  # Add more class names as needed
-                print("** class doesn't exist **")
-                return
             objects = storage.all(arg)
         else:
             objects = storage.all()
+
         print([str(obj) for obj in objects.values()])
 
     def do_update(self, arg):
@@ -118,26 +144,41 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel"]:  # Add more class names as needed
+
+        classes = {
+            "BaseModel": BaseModel,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review
+        }
+
+        if args[0] not in classes:
             print("** class doesn't exist **")
             return
+
         if len(args) < 2:
             print("** instance id missing **")
             return
+
         key = "{}.{}".format(args[0], args[1])
         objects = storage.all()
         if key not in objects:
             print("** no instance found **")
             return
+
         if len(args) < 3:
             print("** attribute name missing **")
             return
+
         if len(args) < 4:
             print("** value missing **")
             return
+
         setattr(objects[key], args[2], args[3])
         storage.save()
-
+        
     def default(self, arg):
         """Handle default behavior"""
         args = arg.split('.')
