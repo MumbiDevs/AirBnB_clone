@@ -127,17 +127,6 @@ class HBNBCommand(cmd.Cmd):
             "Review": Review
         }
 
-        if arg and arg not in classes:
-            print("** class doesn't exist **")
-            return
-
-        if arg:
-            objects = storage.all(arg)
-        else:
-            objects = storage.all()
-
-        print([str(obj) for obj in objects.values()])
-        
         if class_name in classes and hasattr(classes[class_name], method):
             instances = getattr(classes[class_name], method)()
             if isinstance(instances, list):
