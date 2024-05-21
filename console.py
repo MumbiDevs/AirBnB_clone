@@ -109,10 +109,18 @@ class HBNBCommand(cmd.Cmd):
     def default(self, arg):
         """Handle default behavior"""
         args = arg.split('.')
-        if len(args) > 1 and args[1] == "all()":
-            self.do_all(args[0])
+        if len(args) > 1:
+            if args[1] == "all()":
+                self.do_all(args[0])
+            elif args[1] == "count()":
+                objects = storage.all(args[0])
+                count = sum(1 for obj in objects.values())
+                print(count)
+            else:
+                print("*** Unknown syntax: {}".format(arg))
         else:
             print("*** Unknown syntax: {}".format(arg))
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
